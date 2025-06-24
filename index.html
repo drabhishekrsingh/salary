@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Salary Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            padding: 40px;
+        }
+
+        .input-section {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .input-section h2 {
+            color: #1f2937;
+            font-size: 1.5em;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-section h2::before {
+            content: '💰';
+            font-size: 1.2em;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #374151;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .currency-input {
+            position: relative;
+        }
+
+        .currency-input::before {
+            content: '₹';
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            font-weight: 600;
+            font-size: 16px;
+            z-index: 1;
+        }
+
+        .currency-input .input-field {
+            padding-left: 45px;
+        }
+
+        .results-section {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .results-section h2 {
+            color: #1f2937;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0;
+        }
+
+        .results-section h2::before {
+            content: '📊';
+            font-size: 1.2em;
+        }
+
+        .formula-toggle {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+        }
+
+        .formula-toggle:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .formula-toggle.active {
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .result-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-item.highlight {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left-color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .result-item.total {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-left-color: #1d4ed8;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        .result-label {
+            color: #374151;
+            font-weight: 500;
+        }
+
+        .result-value {
+            color: #1f2937;
+            font-weight: 600;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+        }
+
+        .calculation-formula {
+            font-size: 0.8em;
+            color: #6b7280;
+            margin-top: 4px;
+            font-style: italic;
+            display: none;
+            opacity: 0;
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+        }
+
+        .calculation-formula.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reset-section {
+            padding: 20px 40px 40px;
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .reset-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .reset-btn:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .results-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+
+            .reset-section {
+                padding: 20px;
+            }
+        }
+
+        .loading {
+            opacity: 0.6;
+            transition: opacity 0.3s ease;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Salary Calculator</h1>
+        </div>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <h2>Salary Input</h2>
+                <div class="input-group">
+                    <label for="basicSalary">Basic Salary</label>
+                    <div class="currency-input">
+                        <input type="number" id="basicSalary" class="input-field" placeholder="Enter your basic salary" min="0" step="100">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="results-section">
+                <div class="results-header">
+                    <h2>Salary Breakdown</h2>
+                    <button class="formula-toggle" onclick="toggleFormulas()">
+                        📋 Show Formulas
+                    </button>
+                </div>
+                <div id="results">
+                    <div class="result-item">
+                        <span class="result-label">Basic Salary</span>
+                        <span class="result-value" id="basic">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">
+                            Non-Practicing Allowance
+                            <div class="calculation-formula">20% × Basic Salary</div>
+                        </span>
+                        <span class="result-value" id="npa">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">
+                            Dearness Allowance
+                            <div class="calculation-formula">55% × (Basic + NPA)</div>
+                        </span>
+                        <span class="result-value" id="da">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">
+                            House Rent Allowance
+                            <div class="calculation-formula">10% × Basic Salary</div>
+                        </span>
+                        <span class="result-value" id="hra">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">
+                            Special Duty Allowance
+                            <div class="calculation-formula">10% × Basic Salary</div>
+                        </span>
+                        <span class="result-value" id="sda">₹0</span>
+                    </div>
+                    <div class="result-item highlight">
+                        <span class="result-label">
+                            Net Salary
+                            <div class="calculation-formula">Basic + NPA + DA</div>
+                        </span>
+                        <span class="result-value" id="netSalary">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">
+                            NPS Self
+                            <div class="calculation-formula">10% × Net Salary</div>
+                        </span>
+                        <span class="result-value" id="npsSelf">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">
+                            NPS Employer
+                            <div class="calculation-formula">14% × Net Salary</div>
+                        </span>
+                        <span class="result-value" id="npsEmployer">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">
+                            NPS Total
+                            <div class="calculation-formula">NPS Self + NPS Employer</div>
+                        </span>
+                        <span class="result-value" id="npsTotal">₹0</span>
+                    </div>
+                    <div class="result-item highlight">
+                        <span class="result-label">
+                            Total Salary
+                            <div class="calculation-formula">Basic + NPA + DA + HRA + SDA</div>
+                        </span>
+                        <span class="result-value" id="totalSalary">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">
+                            Total Salary including NPS
+                            <div class="calculation-formula">Total Salary + NPS Self</div>
+                        </span>
+                        <span class="result-value" id="totalSalaryWithNPS">₹0</span>
+                    </div>
+                    <div class="result-item total">
+                        <span class="result-label">
+                            🎯 Gross Salary
+                            <div class="calculation-formula">Total Salary + NPS Total</div>
+                        </span>
+                        <span class="result-value" id="grossSalary">₹0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="reset-section">
+            <button class="reset-btn" onclick="resetCalculator()">
+                🔄 Reset Calculator
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let formulasVisible = false;
+
+        const basicSalaryInput = document.getElementById('basicSalary');
+        const resultsContainer = document.getElementById('results');
+        
+        // Add smooth animation on input
+        basicSalaryInput.addEventListener('input', function() {
+            resultsContainer.classList.add('loading');
+            setTimeout(() => {
+                calculateSalary();
+                resultsContainer.classList.remove('loading');
+                resultsContainer.classList.add('fade-in');
+                setTimeout(() => resultsContainer.classList.remove('fade-in'), 500);
+            }, 200);
+        });
+
+        function toggleFormulas() {
+            const formulas = document.querySelectorAll('.calculation-formula');
+            const toggleBtn = document.querySelector('.formula-toggle');
+            
+            formulasVisible = !formulasVisible;
+            
+            formulas.forEach((formula, index) => {
+                setTimeout(() => {
+                    if (formulasVisible) {
+                        formula.classList.add('show');
+                    } else {
+                        formula.classList.remove('show');
+                    }
+                }, index * 50);
+            });
+            
+            if (formulasVisible) {
+                toggleBtn.textContent = '📋 Hide Formulas';
+                toggleBtn.classList.add('active');
+            } else {
+                toggleBtn.textContent = '📋 Show Formulas';
+                toggleBtn.classList.remove('active');
+            }
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-IN', {
+                style: 'currency',
+                currency: 'INR',
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+
+        function calculateSalary() {
+            const basicSalary = parseFloat(basicSalaryInput.value) || 0;
+            
+            if (basicSalary <= 0) {
+                resetResults();
+                return;
+            }
+            
+            // Calculate all components
+            const npa = basicSalary * 0.20;
+            const da = (basicSalary + npa) * 0.55;
+            const hra = basicSalary * 0.10;
+            const sda = basicSalary * 0.10;
+            const netSalary = basicSalary + npa + da;
+            const npsSelf = netSalary * 0.10;
+            const npsEmployer = netSalary * 0.14;
+            const npsTotal = npsSelf + npsEmployer;
+            const totalSalary = basicSalary + npa + da + hra + sda;
+            const totalSalaryWithNPS = totalSalary + npsSelf;
+            const grossSalary = totalSalary + npsTotal;
+            
+            // Update UI
+            document.getElementById('basic').textContent = formatCurrency(basicSalary);
+            document.getElementById('npa').textContent = formatCurrency(npa);
+            document.getElementById('da').textContent = formatCurrency(da);
+            document.getElementById('hra').textContent = formatCurrency(hra);
+            document.getElementById('sda').textContent = formatCurrency(sda);
+            document.getElementById('netSalary').textContent = formatCurrency(netSalary);
+            document.getElementById('npsSelf').textContent = formatCurrency(npsSelf);
+            document.getElementById('npsEmployer').textContent = formatCurrency(npsEmployer);
+            document.getElementById('npsTotal').textContent = formatCurrency(npsTotal);
+            document.getElementById('totalSalary').textContent = formatCurrency(totalSalary);
+            document.getElementById('totalSalaryWithNPS').textContent = formatCurrency(totalSalaryWithNPS);
+            document.getElementById('grossSalary').textContent = formatCurrency(grossSalary);
+        }
+
+        function resetResults() {
+            const resultValues = document.querySelectorAll('.result-value');
+            resultValues.forEach(element => {
+                element.textContent = '₹0';
+            });
+        }
+
+        function resetCalculator() {
+            basicSalaryInput.value = '';
+            resetResults();
+            basicSalaryInput.focus();
+            
+            // Add visual feedback
+            basicSalaryInput.style.transform = 'scale(1.02)';
+            setTimeout(() => {
+                basicSalaryInput.style.transform = 'scale(1)';
+            }, 200);
+        }
+
+        // Initialize calculator
+        calculateSalary();
+        
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'r') {
+                e.preventDefault();
+                resetCalculator();
+            }
+        });
+    </script>
+</body>
+</html>
